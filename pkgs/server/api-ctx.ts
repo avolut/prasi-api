@@ -14,8 +14,12 @@ export const apiContext = (ctx: any) => {
         const searchParams = new URLSearchParams(
           pageHref.substring(pageHref.indexOf("?"))
         );
+        const result: any = {};
+        searchParams.forEach((v, k) => {
+          result[k] = v;
+        });
 
-        return searchParams as any;
+        return result as any;
       },
     } as Request & { params: any; query_parameters: any },
     res: {
