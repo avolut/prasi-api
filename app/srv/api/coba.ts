@@ -1,4 +1,4 @@
-import { apiContext } from "service-srv";
+import { apiContext } from "../../../pkgs/server/api-ctx";
 
 export const _ = {
   url: "/coba",
@@ -10,7 +10,6 @@ export const _ = {
   }) {
     const { req, res } = apiContext(this);
 
-    console.log(arg);
     res.send({ moko: "mantap jiwa" });
   },
 };

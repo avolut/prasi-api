@@ -19,7 +19,7 @@
     "allowJs": true,
     "paths": {
       "service-srv": [
-        "./pkgs/server/srv.ts"
+        "./pkgs/server/api-ctx.ts"
       ]
     },
     "types": [

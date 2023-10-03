@@ -7,6 +7,7 @@ type SingleRoute = {
   url: string;
   args: string[];
   fn: (...arg: any[]) => Promise<any>;
+  path: string;
 };
 
 export const g = global as unknown as {
@@ -15,5 +16,6 @@ export const g = global as unknown as {
   server: Server;
   log: Logger;
   api: Record<string, SingleRoute>;
+  web: Record<string, { site_id: string; secret: string }>;
   router: RadixRouter<SingleRoute>;
 };
