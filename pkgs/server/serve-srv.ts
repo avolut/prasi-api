@@ -9,14 +9,16 @@ export const serveAPI = async (url: URL, req: Request) => {
     const params = { ...found.params };
 
     if (req.method !== "GET") {
-      try {
-        const json = await req.json();
-        if (typeof json === "object") {
-          for (const [k, v] of Object.entries(json)) {
-            params[k] = v;
+      if (!req.headers.get("content-type")?.startsWith("multipart/form-data")) {
+        try {
+          const json = await req.json();
+          if (typeof json === "object") {
+            for (const [k, v] of Object.entries(json)) {
+              params[k] = v;
+            }
           }
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
     }
 
     const current = {
@@ -34,10 +36,13 @@ export const serveAPI = async (url: URL, req: Request) => {
       }
     }
 
-    const body = await current.fn(...args);
+    const finalResponse = await current.fn(...args);
 
-    if (body) {
-      return createResponse(current.res, body);
+    if (finalResponse instanceof Response) {
+      return finalResponse;
+    }
+    if (finalResponse) {
+      return createResponse(current.res, finalResponse);
     }
 
     return current.res;

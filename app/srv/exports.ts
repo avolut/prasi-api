@@ -1,3 +1,10 @@
+export const _upload = {
+  name: "_upload",
+  url: "/_upload",
+  path: "app/srv/api/built-in/_upload.ts",
+  args: ["body"],
+  handler: import("./api/built-in/_upload")
+}
 export const _prasi = {
   name: "_prasi",
   url: "/_prasi/**",
@@ -5,11 +12,18 @@ export const _prasi = {
   args: [],
   handler: import("./api/built-in/_prasi")
 }
+export const _file = {
+  name: "_file",
+  url: "/_file/**",
+  path: "app/srv/api/built-in/_file.ts",
+  args: [],
+  handler: import("./api/built-in/_file")
+}
 export const _api_frm = {
   name: "_api_frm",
   url: "/_api_frm",
   path: "app/srv/api/built-in/_api_frm.ts",
-  args: ["dbName","action"],
+  args: [],
   handler: import("./api/built-in/_api_frm")
 }
 export const _dbs = {

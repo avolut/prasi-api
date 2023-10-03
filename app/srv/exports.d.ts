@@ -1,3 +1,12 @@
+declare module "pkgs/utils/dir" {
+    export const dir: (path: string) => any;
+}
+declare module "app/srv/api/built-in/_upload" {
+    export const _: {
+        url: string;
+        api(body: any): Promise<string>;
+    };
+}
 declare module "app/db/db" {
     
 }
@@ -42,19 +51,22 @@ declare module "pkgs/server/api-ctx" {
     };
     export const createResponse: (existingRes: any, body: any) => Response;
 }
-declare module "pkgs/utils/dir" {
-    export const dir: (path: string) => any;
-}
 declare module "app/srv/api/built-in/_prasi" {
     export const _: {
         url: string;
         api(): Promise<void>;
     };
 }
+declare module "app/srv/api/built-in/_file" {
+    export const _: {
+        url: string;
+        api(): Promise<Response>;
+    };
+}
 declare module "app/srv/api/built-in/_api_frm" {
     export const _: {
         url: string;
-        api(dbName: any, action?: string): Promise<void>;
+        api(): Promise<void>;
     };
 }
 declare module "pkgs/utils/query" {
@@ -84,6 +96,13 @@ declare module "app/srv/api/coba" {
     };
 }
 declare module "app/srv/exports" {
+    export const _upload: {
+        name: string;
+        url: string;
+        path: string;
+        args: string[];
+        handler: Promise<typeof import("app/srv/api/built-in/_upload")>;
+    };
     export const _prasi: {
         name: string;
         url: string;
@@ -91,11 +110,18 @@ declare module "app/srv/exports" {
         args: any[];
         handler: Promise<typeof import("app/srv/api/built-in/_prasi")>;
     };
+    export const _file: {
+        name: string;
+        url: string;
+        path: string;
+        args: any[];
+        handler: Promise<typeof import("app/srv/api/built-in/_file")>;
+    };
     export const _api_frm: {
         name: string;
         url: string;
         path: string;
-        args: string[];
+        args: any[];
         handler: Promise<typeof import("app/srv/api/built-in/_api_frm")>;
     };
     export const _dbs: {

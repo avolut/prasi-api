@@ -3,10 +3,8 @@ import { g } from "../../../../pkgs/utils/global";
 
 export const _ = {
   url: "/_api_frm",
-  async api(dbName: any, action?: string) {
+  async api() {
     const { req, res } = apiContext(this);
-
-    // TODO: whitelist origin
     const allowUrl = req.headers.get("origin") || req.headers.get("referer");
 
     res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
