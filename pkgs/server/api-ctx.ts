@@ -1,27 +1,22 @@
 import { g } from "../utils/global";
 
-export const apiContext = (ctx: any) => {
-  return {
-    req: {
-      ...ctx.req,
-      get params() {
-        const url = new URL(ctx.req.url);
-        const found = g.router.lookup(url.pathname);
-        return found?.params || { _: "" };
-      },
-      get query_parameters() {
-        const pageHref = ctx.req.url;
-        const searchParams = new URLSearchParams(
-          pageHref.substring(pageHref.indexOf("?"))
-        );
-        const result: any = {};
-        searchParams.forEach((v, k) => {
-          result[k] = v;
-        });
+const parseQueryParams = (ctx: any) => {
+  const pageHref = ctx.req.url;
+  const searchParams = new URLSearchParams(
+    pageHref.substring(pageHref.indexOf("?"))
+  );
+  const result: any = {};
+  searchParams.forEach((v, k) => {
+    result[k] = v;
+  });
 
-        return result as any;
-      },
-    } as Request & { params: any; query_parameters: any },
+  return result as any;
+};
+export const apiContext = (ctx: any) => {
+  ctx.req.params = ctx.params;
+  ctx.req.query_parameters = parseQueryParams(ctx);
+  return {
+    req: ctx.req as Request & { params: any; query_parameters: any },
     res: {
       ...ctx.res,
       send: (body) => {

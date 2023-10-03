@@ -22,6 +22,10 @@ declare module "pkgs/utils/global" {
             secret: string;
         }>;
         router: RadixRouter<SingleRoute>;
+        frm: {
+            js: string;
+            etag: string;
+        };
     };
 }
 declare module "pkgs/server/api-ctx" {
@@ -47,6 +51,24 @@ declare module "app/srv/api/built-in/_prasi" {
         api(): Promise<void>;
     };
 }
+declare module "app/srv/api/built-in/_api_frm" {
+    export const _: {
+        url: string;
+        api(dbName: any, action?: string): Promise<void>;
+    };
+}
+declare module "pkgs/utils/wait-until" {
+    export const waitUntil: (condition: number | (() => any), timeout?: number) => any;
+}
+declare module "pkgs/utils/query" {
+    export type DBArg = {
+        db: string;
+        table: string;
+        action: string;
+        params: any[];
+    };
+    export const execQuery: (args: DBArg, prisma: any) => Promise<any>;
+}
 declare module "app/srv/api/built-in/_dbs" {
     export const _: {
         url: string;
@@ -71,6 +93,13 @@ declare module "app/srv/exports" {
         path: string;
         args: any[];
         handler: Promise<typeof import("app/srv/api/built-in/_prasi")>;
+    };
+    export const _api_frm: {
+        name: string;
+        url: string;
+        path: string;
+        args: string[];
+        handler: Promise<typeof import("app/srv/api/built-in/_api_frm")>;
     };
     export const _dbs: {
         name: string;

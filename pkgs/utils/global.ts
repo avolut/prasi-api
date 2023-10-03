@@ -18,4 +18,8 @@ export const g = global as unknown as {
   api: Record<string, SingleRoute>;
   web: Record<string, { site_id: string; secret: string }>;
   router: RadixRouter<SingleRoute>;
+  frm: {
+    js: string;
+    etag: string;
+  };
 };

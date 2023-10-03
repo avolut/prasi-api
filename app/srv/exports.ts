@@ -5,6 +5,13 @@ export const _prasi = {
   args: [],
   handler: import("./api/built-in/_prasi")
 }
+export const _api_frm = {
+  name: "_api_frm",
+  url: "/_api_frm",
+  path: "app/srv/api/built-in/_api_frm.ts",
+  args: ["dbName","action"],
+  handler: import("./api/built-in/_api_frm")
+}
 export const _dbs = {
   name: "_dbs",
   url: "/_dbs/:dbName/:action",
