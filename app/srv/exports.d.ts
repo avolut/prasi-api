@@ -57,9 +57,6 @@ declare module "app/srv/api/built-in/_api_frm" {
         api(dbName: any, action?: string): Promise<void>;
     };
 }
-declare module "pkgs/utils/wait-until" {
-    export const waitUntil: (condition: number | (() => any), timeout?: number) => any;
-}
 declare module "pkgs/utils/query" {
     export type DBArg = {
         db: string;

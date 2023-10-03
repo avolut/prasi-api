@@ -1,5 +1,3 @@
-import { PrismaClient } from "../../app/db/db";
-import { waitUntil } from "./wait-until";
 
 export type DBArg = {
   db: string;
