@@ -5,11 +5,11 @@ const _internal = { config: {} as any, writeTimeout: null as any };
 
 export const config = {
   init: async () => {
-    await dirAsync(dir("../prasi-data/config"));
-    await dirAsync(dir("../prasi-data/files"));
+    await dirAsync(dir("../data/config"));
+    await dirAsync(dir("../data/files"));
 
     _internal.config =
-      (await readAsync(dir("../prasi-data/config/conf.json"), "json")) || {};
+      (await readAsync(dir("../data/config/conf.json"), "json")) || {};
   },
   get all() {
     return _internal.config;
@@ -27,7 +27,7 @@ export const config = {
     _internal.config[key] = value;
     clearTimeout(_internal.writeTimeout);
     _internal.writeTimeout = setTimeout(() => {
-      writeAsync(dir("../prasi-data/config/conf.json"), _internal.config);
+      writeAsync(dir("../data/config/conf.json"), _internal.config);
     }, 100);
   },
 };

@@ -6,7 +6,11 @@ declare module "app/srv/api/built-in/_deploy" {
         url: string;
         api(action: {
             type: "check";
-        }): Promise<void>;
+            id_site: string;
+        }): Promise<{
+            domains: any[];
+            history: any[];
+        }>;
     };
 }
 declare module "app/srv/api/built-in/_upload" {

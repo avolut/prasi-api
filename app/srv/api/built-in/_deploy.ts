@@ -3,12 +3,14 @@ import { dir } from "../../../../pkgs/utils/dir";
 
 export const _ = {
   url: "/_deploy",
-  async api(action: { type: "check" }) {
+  async api(action: { type: "check"; id_site: string }) {
     const { req, res } = apiContext(this);
     switch (action.type) {
       case "check":
-        res.send({ deployed: {} });
-        break;
+        return {
+          domains: [],
+          history: [],
+        };
     }
   },
 };
