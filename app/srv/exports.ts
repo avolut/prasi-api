@@ -1,3 +1,10 @@
+export const _deploy = {
+  name: "_deploy",
+  url: "/_deploy",
+  path: "app/srv/api/built-in/_deploy.ts",
+  args: ["action"],
+  handler: import("./api/built-in/_deploy")
+}
 export const _upload = {
   name: "_upload",
   url: "/_upload",

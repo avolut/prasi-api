@@ -7,7 +7,6 @@ export const _ = {
     const { req } = apiContext(this);
     const rpath = decodeURIComponent(req.params._);
     const path = dir(`../prasi-data/upload/${rpath}`);
-
     return new Response(Bun.file(path));
   },
 };

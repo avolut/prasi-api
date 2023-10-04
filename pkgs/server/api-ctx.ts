@@ -39,7 +39,8 @@ export const apiContext = (ctx: any) => {
 export const createResponse = (existingRes: any, body: any) => {
   const status =
     typeof existingRes._status === "number" ? existingRes._status : undefined;
-  const res = new Response(
+
+  let res = new Response(
     typeof body === "string" ? body : JSON.stringify(body),
     status
       ? {

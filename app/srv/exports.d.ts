@@ -1,5 +1,13 @@
 declare module "pkgs/utils/dir" {
-    export const dir: (path: string) => any;
+    export const dir: (path: string) => string;
+}
+declare module "app/srv/api/built-in/_deploy" {
+    export const _: {
+        url: string;
+        api(action: {
+            type: "check";
+        }): Promise<void>;
+    };
 }
 declare module "app/srv/api/built-in/_upload" {
     export const _: {
@@ -96,6 +104,13 @@ declare module "app/srv/api/coba" {
     };
 }
 declare module "app/srv/exports" {
+    export const _deploy: {
+        name: string;
+        url: string;
+        path: string;
+        args: string[];
+        handler: Promise<typeof import("app/srv/api/built-in/_deploy")>;
+    };
     export const _upload: {
         name: string;
         url: string;
