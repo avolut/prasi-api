@@ -1,24 +1,6 @@
 declare module "pkgs/utils/dir" {
     export const dir: (path: string) => string;
 }
-declare module "app/srv/api/built-in/_deploy" {
-    export const _: {
-        url: string;
-        api(action: {
-            type: "check";
-            id_site: string;
-        }): Promise<{
-            domains: any[];
-            history: any[];
-        }>;
-    };
-}
-declare module "app/srv/api/built-in/_upload" {
-    export const _: {
-        url: string;
-        api(body: any): Promise<string>;
-    };
-}
 declare module "app/db/db" {
     
 }
@@ -34,19 +16,61 @@ declare module "pkgs/utils/global" {
     };
     export const g: {
         
+        dburl: string;
         mode: "dev" | "prod";
         
         log: Logger;
         api: Record<string, SingleRoute>;
+        domains: null | Record<string, string>;
         web: Record<string, {
             site_id: string;
-            secret: string;
+            deploys: number[];
+            domains: string[];
         }>;
         router: RadixRouter<SingleRoute>;
+        port: number;
         frm: {
             js: string;
             etag: string;
         };
+    };
+}
+declare module "pkgs/utils/restart" {
+    export const restartServer: () => never;
+}
+declare module "app/srv/api/built-in/_deploy" {
+    export const _: {
+        url: string;
+        api(action: ({
+            type: "check";
+        } | {
+            type: "db-update";
+            url: string;
+        } | {
+            type: "db-pull";
+        } | {
+            type: "restart";
+        } | {
+            type: "domain-add";
+            domain: string;
+        } | {
+            type: "domain-del";
+            domain: string;
+        }) & {
+            id_site: string;
+        }): Promise<"ok" | {
+            domains: string[];
+            deploys: number[];
+            db: {
+                url: string;
+            };
+        }>;
+    };
+}
+declare module "app/srv/api/built-in/_upload" {
+    export const _: {
+        url: string;
+        api(body: any): Promise<string>;
     };
 }
 declare module "pkgs/server/api-ctx" {

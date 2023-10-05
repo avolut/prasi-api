@@ -12,12 +12,18 @@ type SingleRoute = {
 
 export const g = global as unknown as {
   db: PrismaClient;
+  dburl: string;
   mode: "dev" | "prod";
   server: Server;
   log: Logger;
   api: Record<string, SingleRoute>;
-  web: Record<string, { site_id: string; secret: string }>;
+  domains: null | Record<string, string>;
+  web: Record<
+    string,
+    { site_id: string; deploys: number[]; domains: string[] }
+  >;
   router: RadixRouter<SingleRoute>;
+  port: number;
   frm: {
     js: string;
     etag: string;

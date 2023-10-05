@@ -1,10 +1,11 @@
-import { inspect, inspectAsync, listAsync } from "fs-jetpack";
-import { dirname, join } from "path";
+import { inspectAsync, listAsync } from "fs-jetpack";
+import { join } from "path";
 import { createRouter } from "radix3";
 import { dir } from "../utils/dir";
 import { g } from "../utils/global";
 import { parseArgs } from "./parse-args";
-import { serveAPI as serveSRV } from "./serve-srv";
+import { serveAPI } from "./serve-api";
+import { serveWeb } from "./serve-web";
 
 export const createServer = async () => {
   const apiDir = dir(`app/srv/api`);
@@ -42,12 +43,18 @@ export const createServer = async () => {
   await scan(apiDir);
 
   g.server = Bun.serve({
+    port: g.port,
     async fetch(req) {
       const url = new URL(req.url);
 
-      const srv = await serveSRV(url, req);
-      if (srv) {
-        return srv;
+      const web = await serveWeb(url, req);
+      if (web) {
+        return web;
+      }
+
+      const api = await serveAPI(url, req);
+      if (api) {
+        return api;
       }
 
       return new Response(`Bun ${url.pathname}`);

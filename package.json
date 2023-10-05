@@ -3,8 +3,8 @@
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot --watch ./pkgs/index.ts dev",
-    "prod": "bun run ./pkgs/index.ts "
+    "dev": "bun run --silent --watch ./pkgs/index.ts dev",
+    "prod": "bun run --silent ./pkgs/index.ts "
   },
   "workspaces": [
     "app/*"
@@ -19,6 +19,7 @@
     "@surfy/multipart-parser": "^1.0.2",
     "@swc/core": "^1.3.91",
     "brotli-compress": "^1.3.3",
+    "execa": "^8.0.1",
     "fs-jetpack": "^5.1.0",
     "lmdb": "^2.8.5",
     "pino": "^8.15.3",

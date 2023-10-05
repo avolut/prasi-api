@@ -10,6 +10,8 @@ export const _ = {
   }) {
     const { req, res } = apiContext(this);
 
+    console.log(process.env.DATABASE_URL);
+
     res.send({ moko: "mantap jiwa" });
   },
 };

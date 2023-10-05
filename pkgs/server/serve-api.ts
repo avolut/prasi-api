@@ -1,5 +1,4 @@
 import { createResponse } from "service-srv";
-import { config } from "../utils/config";
 import { g } from "../utils/global";
 
 export const serveAPI = async (url: URL, req: Request) => {
