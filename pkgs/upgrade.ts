@@ -26,8 +26,3 @@ for (const file of data.files) {
   }
 }
 await Promise.all(promises);
-
-// await removeAsync(dir(`pkgs`));
-// await copyAsync(`${tmp}/pkgs`, dir(`pkgs`));
-
-// await removeAsync(tmp);
