@@ -20,6 +20,9 @@
     "paths": {
       "service-srv": [
         "./pkgs/server/api-ctx.ts"
+      ],
+      "utils/*": [
+        "./pkgs/utils/*"
       ]
     },
     "types": [

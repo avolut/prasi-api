@@ -5,8 +5,8 @@ import { config } from "./utils/config";
 import { g } from "./utils/global";
 import { createLogger } from "./utils/logger";
 import { loadWeb } from "./server/load-web";
-import { ensureNotRunning } from "utils/ensure-running";
-import { preparePrisma } from "utils/prepare-prisma";
+import { ensureNotRunning } from "utils/ensure";
+import { preparePrisma } from "utils/prisma";
 import { startDevWatcher } from "utils/dev-watcher";
 
 await preparePrisma();
