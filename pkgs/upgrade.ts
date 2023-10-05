@@ -1,9 +1,8 @@
-import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
-import unzipper from "unzipper";
-import { dirname } from "path";
-import { dir } from "utils/dir";
-import { $, execa, execaCommand } from "execa";
 import { spawnSync } from "bun";
+import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
+import { dirname } from "path";
+import unzipper from "unzipper";
+import { dir } from "utils/dir";
 const res = await fetch(
   `https://github.com/avolut/prasi-api/archive/refs/heads/main.zip`,
   { method: "get" }
