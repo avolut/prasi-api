@@ -1,5 +1,5 @@
 import { apiContext } from "service-srv";
-import { dir } from "../../../../pkgs/utils/dir";
+import { dir } from "utils/dir";
 
 export const _ = {
   url: "/_file/**",

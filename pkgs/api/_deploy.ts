@@ -1,9 +1,9 @@
 import { apiContext } from "service-srv";
-import { dir } from "../../../../pkgs/utils/dir";
+import { dir } from "utils/dir";
 import { dirAsync, writeAsync } from "fs-jetpack";
-import { g } from "../../../../pkgs/utils/global";
+import { g } from "utils/global";
 import { $ } from "execa";
-import { restartServer } from "../../../../pkgs/utils/restart";
+import { restartServer } from "utils/restart";
 export const _ = {
   url: "/_deploy",
   async api(

@@ -1,22 +1,22 @@
 import { inspectAsync, listAsync } from "fs-jetpack";
 import { join } from "path";
 import { createRouter } from "radix3";
-import { dir } from "../utils/dir";
 import { g } from "../utils/global";
 import { parseArgs } from "./parse-args";
 import { serveAPI } from "./serve-api";
 import { serveWeb } from "./serve-web";
+import { dir } from "../utils/dir";
+import { file } from "bun";
 
 export const createServer = async () => {
-  const apiDir = dir(`app/srv/api`);
   g.router = createRouter({ strictTrailingSlash: true });
   g.api = {};
-  const scan = async (path: string) => {
+  const scan = async (path: string, root?: string) => {
     const apis = await listAsync(path);
     if (apis) {
-      for (const file of apis) {
-        const importPath = join(path, file);
-        if (file.endsWith(".ts")) {
+      for (const filename of apis) {
+        const importPath = join(path, filename);
+        if (filename.endsWith(".ts")) {
           try {
             const api = await import(importPath);
             let args: string[] = await parseArgs(importPath);
@@ -24,23 +24,35 @@ export const createServer = async () => {
               url: api._.url,
               args,
               fn: api._.api,
-              path: importPath.substring(apiDir.length + 1),
+              path: importPath.substring((root || path).length + 1),
             };
-            g.api[file] = route;
+            g.api[filename] = route;
             g.router.insert(route.url, route);
           } catch (e) {
-            g.log.warn(`Failed to import ${importPath}`);
+            g.log.warn(
+              `Failed to import app/srv/api${importPath.substring(
+                (root || path).length
+              )}`
+            );
+
+            const f = file(importPath);
+            if (f.size > 0) {
+              console.error(e);
+            } else {
+              g.log.warn(` ➨ file is empty`);
+            }
           }
         } else {
           const dir = await inspectAsync(importPath);
           if (dir?.type === "dir") {
-            await scan(importPath);
+            await scan(importPath, path);
           }
         }
       }
     }
   };
-  await scan(apiDir);
+  await scan(dir(`app/srv/api`));
+  await scan(dir(`pkgs/api`));
 
   g.server = Bun.serve({
     port: g.port,

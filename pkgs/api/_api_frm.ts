@@ -1,5 +1,5 @@
-import { apiContext } from "../../../../pkgs/server/api-ctx";
-import { g } from "../../../../pkgs/utils/global";
+import { apiContext } from "service-srv";
+import { g } from "utils/global";
 
 export const _ = {
   url: "/_api_frm",

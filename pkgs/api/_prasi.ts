@@ -1,7 +1,7 @@
 import { readAsync } from "fs-jetpack";
-import { apiContext } from "../../../../pkgs/server/api-ctx";
-import { g } from "../../../../pkgs/utils/global";
-import { dir } from "../../../../pkgs/utils/dir";
+import { apiContext } from "service-srv";
+import { g } from "utils/global";
+import { dir } from "utils/dir";
 
 const cache = {
   src: "",

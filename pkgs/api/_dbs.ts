@@ -1,5 +1,5 @@
-import { apiContext } from "../../../../pkgs/server/api-ctx";
-import { execQuery } from "../../../../pkgs/utils/query";
+import { apiContext } from "service-srv";
+import { execQuery } from "utils/query";
 
 export const _ = {
   url: "/_dbs/:dbName/:action",

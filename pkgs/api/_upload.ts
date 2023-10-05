@@ -1,6 +1,6 @@
 import { apiContext } from "service-srv";
 import mp from "@surfy/multipart-parser";
-import { dir } from "../../../../pkgs/utils/dir";
+import { dir } from "utils/dir";
 import { writeAsync } from "fs-jetpack";
 
 export const _ = {
