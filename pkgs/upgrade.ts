@@ -28,4 +28,4 @@ for (const file of data.files) {
 }
 await Promise.all(promises);
 
-await $({ stdio: "inherit" })`bun i`;
+await $({ stdio: "inherit" })`${process.execPath} i`;
