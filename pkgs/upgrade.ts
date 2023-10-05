@@ -2,6 +2,7 @@ import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
 import unzipper from "unzipper";
 import { dirname } from "path";
 import { dir } from "utils/dir";
+import { $ } from "execa";
 const res = await fetch(
   `https://github.com/avolut/prasi-api/archive/refs/heads/main.zip`,
   { method: "get" }
@@ -26,3 +27,5 @@ for (const file of data.files) {
   }
 }
 await Promise.all(promises);
+
+await $({ stdio: "inherit" })`bun i`;
