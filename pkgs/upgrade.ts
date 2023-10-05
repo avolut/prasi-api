@@ -29,4 +29,4 @@ for (const file of data.files) {
 }
 await Promise.all(promises);
 
-spawnSync({ cmd: ["bun", "install"] });
+spawnSync({ cmd: ["bun", "install"], stdout: "inherit", stderr: "inherit" });
