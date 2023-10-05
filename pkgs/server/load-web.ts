@@ -7,12 +7,19 @@ export const loadWeb = async () => {
 
   const list = await inspectTreeAsync(dir(`app/web`));
   for (const web of list?.children || []) {
+    const deploy = web.children.find((e) => e.name === "deploys");
+
     g.web[web.name] = {
-      deploys: [],
+      current: parseInt(
+        (await readAsync(dir(`app/web/${web.name}/current`))) || "0"
+      ),
+      deploys: deploy ? deploy.children.map((e) => parseInt(e.name)) : [],
       domains:
         (await readAsync(dir(`app/web/${web.name}/domains.json`), "json")) ||
         [],
       site_id: web.name,
+      cacheKey: 0,
+      cache: null,
     };
   }
 };

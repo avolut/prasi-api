@@ -1,8 +1,9 @@
+import { $ } from "execa";
+import * as fs from "fs";
+import { dirAsync, writeAsync } from "fs-jetpack";
 import { apiContext } from "service-srv";
 import { dir } from "utils/dir";
-import { dirAsync, writeAsync } from "fs-jetpack";
 import { g } from "utils/global";
-import { $ } from "execa";
 import { restartServer } from "utils/restart";
 export const _ = {
   url: "/_deploy",
@@ -14,6 +15,8 @@ export const _ = {
       | { type: "restart" }
       | { type: "domain-add"; domain: string }
       | { type: "domain-del"; domain: string }
+      | { type: "deploy"; dlurl: string }
+      | { type: "redeploy"; ts: string }
     ) & {
       id_site: string;
     }
@@ -22,9 +25,12 @@ export const _ = {
 
     if (!g.web[action.id_site]) {
       g.web[action.id_site] = {
+        current: 0,
         domains: [],
         deploys: [],
         site_id: action.id_site,
+        cacheKey: 0,
+        cache: null,
       };
     }
     const path = `app/web/${action.id_site}`;
@@ -35,8 +41,10 @@ export const _ = {
     switch (action.type) {
       case "check":
         return {
-          domains: web.domains,
+          now: Date.now(),
+          current: web.current,
           deploys: web.deploys,
+          domains: web.domains,
           db: {
             url: g.dburl || "-",
           },
@@ -87,6 +95,56 @@ PORT=${g.port}`
           res.send("ok");
         }
         break;
+      case "deploy":
+        {
+          await fs.promises.mkdir(`${path}/deploys`, { recursive: true });
+          const cur = Date.now();
+          const filePath = `${path}/deploys/${cur}`;
+          if (await downloadFile(action.dlurl, filePath)) {
+            await fs.promises.writeFile(`${path}/current`, cur.toString());
+            web.current = cur;
+            web.deploys.push(cur);
+          }
+          return {
+            now: Date.now(),
+            current: web.current,
+            deploys: web.deploys,
+          };
+        }
+        break;
+      case "redeploy":
+        {
+          const cur = parseInt(action.ts);
+          if (web.deploys.find((e) => e === cur)) {
+            web.current = cur;
+            await fs.promises.writeFile(`${path}/current`, cur.toString());
+          }
+
+          return {
+            now: Date.now(),
+            current: web.current,
+            deploys: web.deploys,
+          };
+        }
+        break;
     }
   },
+};
+
+const downloadFile = async (url: string, filePath: string) => {
+  try {
+    const _url = new URL(url);
+    if (_url.hostname === "localhost") {
+      _url.hostname = "127.0.0.1";
+    }
+    const response = await fetch(_url);
+    if (response.body) {
+      const blobData = await Bun.readableStreamToBlob(response.body);
+      await Bun.write(filePath, blobData);
+    }
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };
