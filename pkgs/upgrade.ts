@@ -1,7 +1,7 @@
-import { writeFileSync } from "fs";
-import { copyAsync, removeAsync, tmpDir } from "fs-jetpack";
+import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
+import unzipper from "unzipper";
+import { dirname } from "path";
 import { dir } from "utils/dir";
-import unzipper, { unzip } from "unzipper";
 const res = await fetch(
   `https://github.com/avolut/prasi-api/archive/refs/heads/main.zip`,
   { method: "get" }
@@ -9,7 +9,23 @@ const res = await fetch(
 
 const data = await unzipper.Open.buffer(Buffer.from(await res.arrayBuffer()));
 
-console.log(data.files);
+const promises: Promise<void>[] = [];
+await removeAsync(dir("pkgs"));
+for (const file of data.files) {
+  if (file.type === "File") {
+    const path = file.path.split("/").slice(1).join("/");
+    if (path === "tsconfig.json" || path.startsWith("pkgs")) {
+      promises.push(
+        new Promise<void>(async (done) => {
+          await dirAsync(dirname(dir(path)));
+          await writeAsync(dir(path), await file.buffer());
+          done();
+        })
+      );
+    }
+  }
+}
+await Promise.all(promises);
 
 // await removeAsync(dir(`pkgs`));
 // await copyAsync(`${tmp}/pkgs`, dir(`pkgs`));
