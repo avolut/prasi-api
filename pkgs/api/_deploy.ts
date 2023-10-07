@@ -1,7 +1,7 @@
+import { gzipSync } from "bun";
 import { $ } from "execa";
 import * as fs from "fs";
 import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
-import { compress } from "brotli-compress";
 import { apiContext } from "service-srv";
 import { dir } from "utils/dir";
 import { g } from "utils/global";
@@ -132,10 +132,17 @@ DATABASE_URL="${action.url}"
       case "redeploy":
         {
           const cur = parseInt(action.ts);
-          if (web.deploys.find((e) => e === cur)) {
-            web.current = cur;
-            await fs.promises.writeFile(`${path}/current`, cur.toString());
-            await loadWebCache(web.site_id, web.current);
+          const lastcur = web.current;
+          try {
+            if (web.deploys.find((e) => e === cur)) {
+              web.current = cur;
+              await fs.promises.writeFile(`${path}/current`, cur.toString());
+              await loadWebCache(web.site_id, web.current);
+            }
+          } catch (e) {
+            web.current = lastcur;
+            web.deploys = web.deploys.filter((e) => e !== parseInt(action.ts));
+            await removeAsync(`${path}/deploys/${action.ts}`);
           }
 
           return {
@@ -157,11 +164,9 @@ const downloadFile = async (url: string, filePath: string) => {
     }
     const response = await fetch(_url);
     if (response.body) {
-      const blobData = await Bun.readableStreamToBlob(response.body);
-      await Bun.write(
-        filePath,
-        await compress(new Uint8Array(await blobData.arrayBuffer()))
-      );
+      const body = await response.arrayBuffer();
+
+      await Bun.write(filePath, gzipSync(Buffer.from(body), { level: 9 }));
     }
     return true;
   } catch (e) {

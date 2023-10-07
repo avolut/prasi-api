@@ -1,4 +1,4 @@
-import { decompress } from "brotli-compress";
+import { gunzipSync } from "zlib";
 import { existsAsync, inspectTreeAsync, readAsync } from "fs-jetpack";
 import { dir } from "../utils/dir";
 import { g } from "../utils/global";
@@ -40,7 +40,7 @@ export const loadWebCache = async (site_id: string, ts: number | string) => {
     if (await existsAsync(path)) {
       const fileContent = await readAsync(path, "buffer");
       if (fileContent) {
-        const res = await decompress(fileContent);
+        const res = gunzipSync(fileContent);
         web.cache = JSON.parse(decoder.decode(res));
       }
     }
