@@ -165,8 +165,7 @@ const downloadFile = async (url: string, filePath: string) => {
     const response = await fetch(_url);
     if (response.body) {
       const body = await response.arrayBuffer();
-
-      await Bun.write(filePath, gzipSync(Buffer.from(body), { level: 9 }));
+      await Bun.write(filePath, body);
     }
     return true;
   } catch (e) {

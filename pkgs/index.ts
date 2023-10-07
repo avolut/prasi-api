@@ -12,7 +12,10 @@ import { startDevWatcher } from "utils/dev-watcher";
 await preparePrisma();
 await createLogger();
 await ensureNotRunning();
-await g.db.$connect();
+
+if (g.db) {
+  await g.db.$connect();
+}
 
 await config.init();
 await loadWeb();

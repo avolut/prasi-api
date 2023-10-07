@@ -21,7 +21,7 @@ export const ${name} = {
   const targetFile = dir("app/srv/exports.d.ts");
   spawnSync(
     [
-      "tsc",
+      dir("node_modules/.bin/tsc"),
       dir("app/srv/exports.ts"),
       "--declaration",
       "--emitDeclarationOnly",
