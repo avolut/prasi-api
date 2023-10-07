@@ -12,6 +12,7 @@ import { g } from "../utils/global";
 import { file, write } from "bun";
 import { $ } from "execa";
 import { downloadFile } from "../api/_deploy";
+import { createRouter } from "radix3";
 export const loadWeb = async () => {
   g.web = {};
 
@@ -55,6 +56,7 @@ export const loadWeb = async () => {
       site_id: web.name,
       deploying: null,
       cacheKey: 0,
+      router: null,
       cache: null,
     };
 
@@ -82,6 +84,10 @@ export const loadWebCache = async (site_id: string, ts: number | string) => {
 
         const res = gunzipSync(fileContent);
         web.cache = JSON.parse(decoder.decode(res));
+        web.router = createRouter();
+        for (const p of web.cache?.pages || []) {
+          web.router.insert(p.url, p);
+        }
       }
     }
   }

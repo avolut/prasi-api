@@ -61,9 +61,9 @@ export const createServer = async () => {
       const url = new URL(req.url);
 
       const web = await serveWeb(url, req);
-      let index = "";
+      let index = ["", ""];
       if (web) {
-        if (typeof web === "string") index = web;
+        if (Array.isArray(web)) index = web;
         else {
           return web;
         }
@@ -76,6 +76,7 @@ export const createServer = async () => {
 
       if (index) {
         let status: any = {};
+
         if (!["", "index.html"].includes(trim(url.pathname, " /"))) {
           status = {
             status: 404,
@@ -83,7 +84,21 @@ export const createServer = async () => {
           };
         }
 
-        return new Response(index, {
+        const [site_id, body] = index;
+        if (g.web[site_id]) {
+          const router = g.web[site_id].router;
+          if (router) {
+            let found = router.lookup(url.pathname);
+            if (!found) {
+              found = router.lookup(url.pathname + "/");
+            }
+            if (found) {
+              status = {};
+            }
+          }
+        }
+
+        return new Response(body, {
           ...status,
           headers: {
             "content-type": "text/html",

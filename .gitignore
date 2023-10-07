@@ -176,3 +176,5 @@ dist
 
 app/web
 app/web/*
+app/static
+app/static/*

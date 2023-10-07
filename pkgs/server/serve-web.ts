@@ -35,7 +35,9 @@ export const serveWeb = async (url: URL, req: Request) => {
     }
   } catch (e) {}
 
-  return `
+  return [
+    site_id,
+    `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,5 +51,6 @@ export const serveWeb = async (url: URL, req: Request) => {
   <script src="/site.js" type="module"></script>
   <script>window.id_site = "${site_id}";</script>
 </body>
-</html>`;
+</html>`,
+  ];
 };

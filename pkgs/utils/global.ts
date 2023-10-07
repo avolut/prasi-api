@@ -26,6 +26,7 @@ export const g = global as unknown as {
       deploying: null | { status: string; received: number; total: number };
       deploys: number[];
       domains: string[];
+      router: null | RadixRouter<{ id: string }>;
       cacheKey: number;
       cache: null | {
         site: {
