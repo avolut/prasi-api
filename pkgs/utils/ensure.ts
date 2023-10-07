@@ -26,7 +26,7 @@ export const ensureNotRunning = async () => {
     };
 
     if (!(await checkPort())) {
-      g.log.warn(`Port ${3000} is used, waiting...`);
+      g.log.warn(`Port ${process.env.PORT} is used, waiting...`);
       setInterval(async () => {
         if (await checkPort()) resolve();
       }, 500);

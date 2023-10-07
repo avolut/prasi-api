@@ -1,5 +1,5 @@
 import { spawnSync } from "bun";
-import { dirAsync, removeAsync, Bun.write } from "fs-jetpack";
+import { dirAsync, removeAsync } from "fs-jetpack";
 import { dirname } from "path";
 import unzipper from "unzipper";
 import { dir } from "utils/dir";

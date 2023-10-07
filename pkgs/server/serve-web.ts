@@ -1,8 +1,7 @@
-import { g } from "../utils/global";
-import { join } from "path";
 import { statSync } from "fs";
-import { readAsync } from "fs-jetpack";
+import { join } from "path";
 import { dir } from "utils/dir";
+import { g } from "../utils/global";
 
 export const serveWeb = async (url: URL, req: Request) => {
   const domain = url.hostname;

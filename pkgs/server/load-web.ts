@@ -5,25 +5,25 @@ import {
   inspectTreeAsync,
   readAsync,
   removeAsync,
+  writeAsync,
 } from "fs-jetpack";
 import { dir } from "../utils/dir";
 import { g } from "../utils/global";
-import { write } from "bun";
+import { file, write } from "bun";
 import { $ } from "execa";
+import { downloadFile } from "../api/_deploy";
 export const loadWeb = async () => {
   g.web = {};
 
   await dirAsync(dir(`app/static`));
   const siteZip = `https://api.prasi.app/site-bundle`;
-  if (
-    !(await existsAsync(dir(`app/static/site.zip`))) ||
-    !(await existsAsync(dir(`app/static/md5`)))
-  ) {
-    const download = await fetch(`${siteZip}/download`);
-    await Bun.write(dir(`app/static/site.zip`), await download.arrayBuffer());
+  const zipPath = dir(`app/static/site.zip`);
+  const md5Path = dir(`app/static/md5`);
 
+  if (!(await file(zipPath).exists()) || !(await file(md5Path).exists())) {
+    await downloadFile(`${siteZip}/download`, zipPath);
     const md5 = await fetch(`${siteZip}/md5`);
-    await Bun.write(dir(`app/static/md5`), await md5.text());
+    await writeAsync(md5Path, await md5.text());
 
     await removeAsync(dir(`app/static/site`));
     await $({ cwd: dir(`app/static`) })`unzip site.zip`;
@@ -31,11 +31,11 @@ export const loadWeb = async () => {
     const md5 = await fetch(`${siteZip}/md5`);
     const md5txt = await md5.text();
 
-    if (md5txt !== (await readAsync(dir(`app/static/md5`)))) {
+    if (md5txt !== (await readAsync(md5Path))) {
       const e = await fetch(`${siteZip}/download`);
-      await Bun.write(dir(`app/static/site.zip`), await e.arrayBuffer());
-      await Bun.write(dir(`app/static/md5`), md5txt);
-      await removeAsync(dir(`app/static/site`));
+      await removeAsync(dir(`app/static`));
+      await downloadFile(`${siteZip}/download`, zipPath);
+      await writeAsync(md5Path, md5txt);
       await $({ cwd: dir(`app/static`) })`unzip site.zip`;
     }
   }

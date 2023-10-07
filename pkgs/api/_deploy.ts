@@ -175,10 +175,10 @@ DATABASE_URL="${action.url}"
   },
 };
 
-const downloadFile = async (
+export const downloadFile = async (
   url: string,
   filePath: string,
-  progress: (rec: number, total: number) => void
+  progress?: (rec: number, total: number) => void
 ) => {
   try {
     const _url = new URL(url);
@@ -206,10 +206,12 @@ const downloadFile = async (
         writer.write(value);
         receivedLength += value.length;
 
-        progress(
-          receivedLength,
-          parseInt(res.headers.get("content-length") || "0")
-        );
+        if (progress) {
+          progress(
+            receivedLength,
+            parseInt(res.headers.get("content-length") || "0")
+          );
+        }
       }
     }
     return true;
