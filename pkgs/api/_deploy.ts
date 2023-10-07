@@ -19,6 +19,7 @@ export const _ = {
       | { type: "domain-del"; domain: string }
       | { type: "deploy-del"; ts: string }
       | { type: "deploy"; dlurl: string }
+      | { type: "deploy-status" }
       | { type: "redeploy"; ts: string }
     ) & {
       id_site: string;
@@ -30,13 +31,14 @@ export const _ = {
       g.web[action.id_site] = {
         current: 0,
         domains: [],
+        deploying: null,
         deploys: [],
         site_id: action.id_site,
         cacheKey: 0,
         cache: null,
       };
     }
-    const path = `app/web/${action.id_site}`;
+    const path = dir(`app/web/${action.id_site}`);
     await dirAsync(path);
 
     const web = g.web[action.id_site];
@@ -111,17 +113,35 @@ DATABASE_URL="${action.url}"
           };
         }
         break;
+      case "deploy-status":
+        break;
       case "deploy":
         {
           await fs.promises.mkdir(`${path}/deploys`, { recursive: true });
           const cur = Date.now();
           const filePath = `${path}/deploys/${cur}`;
-          if (await downloadFile(action.dlurl, filePath)) {
+          web.deploying = {
+            status: "generating",
+            received: 0,
+            total: 0,
+          };
+          if (
+            await downloadFile(action.dlurl, filePath, (rec, total) => {
+              web.deploying = {
+                status: "transfering",
+                received: rec,
+                total: total,
+              };
+            })
+          ) {
+            web.deploying.status = "deploying";
             await fs.promises.writeFile(`${path}/current`, cur.toString());
             web.current = cur;
             web.deploys.push(cur);
             await loadWebCache(web.site_id, web.current);
           }
+          web.deploying = null;
+
           return {
             now: Date.now(),
             current: web.current,
@@ -156,16 +176,42 @@ DATABASE_URL="${action.url}"
   },
 };
 
-const downloadFile = async (url: string, filePath: string) => {
+const downloadFile = async (
+  url: string,
+  filePath: string,
+  progress: (rec: number, total: number) => void
+) => {
   try {
     const _url = new URL(url);
     if (_url.hostname === "localhost") {
       _url.hostname = "127.0.0.1";
     }
-    const response = await fetch(_url);
-    if (response.body) {
-      const body = await response.arrayBuffer();
-      await Bun.write(filePath, body);
+    const res = await fetch(_url);
+    if (res.body) {
+      const file = Bun.file(filePath);
+      const writer = file.writer();
+      const reader = res.body.getReader();
+
+      // Step 3: read the data
+      let receivedLength = 0; // received that many bytes at the moment
+      let chunks = []; // array of received binary chunks (comprises the body)
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          writer.end();
+          break;
+        }
+
+        chunks.push(value);
+        writer.write(value);
+        receivedLength += value.length;
+
+        progress(
+          receivedLength,
+          parseInt(res.headers.get("content-length") || "0")
+        );
+      }
     }
     return true;
   } catch (e) {

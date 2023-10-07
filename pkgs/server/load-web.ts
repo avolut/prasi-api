@@ -18,6 +18,7 @@ export const loadWeb = async () => {
         (await readAsync(dir(`app/web/${web.name}/domains.json`), "json")) ||
         [],
       site_id: web.name,
+      deploying: null,
       cacheKey: 0,
       cache: null,
     };
@@ -40,9 +41,37 @@ export const loadWebCache = async (site_id: string, ts: number | string) => {
     if (await existsAsync(path)) {
       const fileContent = await readAsync(path, "buffer");
       if (fileContent) {
+        console.log(
+          `Loading site ${site_id}: ${humanFileSize(fileContent.byteLength)}`
+        );
+
         const res = gunzipSync(fileContent);
         web.cache = JSON.parse(decoder.decode(res));
       }
     }
   }
 };
+
+function humanFileSize(bytes: any, si = false, dp = 1) {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+
+  const units = si
+    ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u = -1;
+  const r = 10 ** dp;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
+
+  return bytes.toFixed(dp) + " " + units[u];
+}

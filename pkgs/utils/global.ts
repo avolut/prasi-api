@@ -23,9 +23,10 @@ export const g = global as unknown as {
     {
       site_id: string;
       current: number;
+      deploying: null | { status: string; received: number; total: number };
       deploys: number[];
       domains: string[];
-      cacheKey: number,
+      cacheKey: number;
       cache: null | {
         site: {
           id: string;

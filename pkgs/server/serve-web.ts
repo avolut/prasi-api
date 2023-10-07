@@ -4,13 +4,14 @@ import { statSync } from "fs";
 import { readAsync } from "fs-jetpack";
 
 export const serveWeb = async (url: URL, req: Request) => {
-  const domain = req.url.substring(0, req.url.length - url.pathname.length);
+  const domain = url.hostname;
   let site_id = "";
   if (!g.domains) {
     g.domains = {};
     for (const web of Object.values(g.web)) {
       for (const d of web.domains) {
-        g.domains[d] = web.site_id;
+        const durl = new URL(d);
+        g.domains[durl.hostname] = web.site_id;
       }
     }
   }
