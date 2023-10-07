@@ -1,11 +1,12 @@
 import { $ } from "execa";
 import * as fs from "fs";
-import { dirAsync, writeAsync } from "fs-jetpack";
+import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
 import { compress } from "brotli-compress";
 import { apiContext } from "service-srv";
 import { dir } from "utils/dir";
 import { g } from "utils/global";
 import { restartServer } from "utils/restart";
+import { loadWebCache } from "../server/load-web";
 export const _ = {
   url: "/_deploy",
   async api(
@@ -16,6 +17,7 @@ export const _ = {
       | { type: "restart" }
       | { type: "domain-add"; domain: string }
       | { type: "domain-del"; domain: string }
+      | { type: "deploy-del"; ts: string }
       | { type: "deploy"; dlurl: string }
       | { type: "redeploy"; ts: string }
     ) & {
@@ -96,6 +98,19 @@ DATABASE_URL="${action.url}"
           res.send("ok");
         }
         break;
+      case "deploy-del":
+        {
+          web.deploys = web.deploys.filter((e) => e !== parseInt(action.ts));
+          try {
+            await removeAsync(`${path}/deploys/${action.ts}`);
+          } catch (e) {}
+          return {
+            now: Date.now(),
+            current: web.current,
+            deploys: web.deploys,
+          };
+        }
+        break;
       case "deploy":
         {
           await fs.promises.mkdir(`${path}/deploys`, { recursive: true });
@@ -105,6 +120,7 @@ DATABASE_URL="${action.url}"
             await fs.promises.writeFile(`${path}/current`, cur.toString());
             web.current = cur;
             web.deploys.push(cur);
+            await loadWebCache(web.site_id, web.current);
           }
           return {
             now: Date.now(),
@@ -119,6 +135,7 @@ DATABASE_URL="${action.url}"
           if (web.deploys.find((e) => e === cur)) {
             web.current = cur;
             await fs.promises.writeFile(`${path}/current`, cur.toString());
+            await loadWebCache(web.site_id, web.current);
           }
 
           return {
