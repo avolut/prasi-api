@@ -5,7 +5,8 @@ export const _ = {
   url: "/_api_frm",
   async api() {
     const { req, res } = apiContext(this);
-    const allowUrl = req.headers.get("origin") || req.headers.get("referer");
+
+    let allowUrl = req.headers.get("origin") || req.headers.get("referer");
 
     res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
     res.setHeader("Access-Control-Allow-Headers", "content-type");

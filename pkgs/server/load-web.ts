@@ -1,7 +1,7 @@
-import { inspectTreeAsync, readAsync } from "fs-jetpack";
-import { g } from "../utils/global";
+import { decompress } from "brotli-compress";
+import { existsAsync, inspectTreeAsync, readAsync } from "fs-jetpack";
 import { dir } from "../utils/dir";
-
+import { g } from "../utils/global";
 export const loadWeb = async () => {
   g.web = {};
 
@@ -21,5 +21,28 @@ export const loadWeb = async () => {
       cacheKey: 0,
       cache: null,
     };
+
+    const cur = g.web[web.name];
+    if (!cur.deploys.includes(cur.current)) {
+      cur.current = 0;
+    }
+    if (cur.current) {
+      await loadWebCache(cur.site_id, cur.current);
+    }
+  }
+};
+
+const decoder = new TextDecoder();
+export const loadWebCache = async (site_id: string, ts: number | string) => {
+  const web = g.web[site_id];
+  if (web) {
+    const path = dir(`app/web/${site_id}/deploys/${ts}`);
+    if (await existsAsync(path)) {
+      const fileContent = await readAsync(path, "buffer");
+      if (fileContent) {
+        const res = await decompress(fileContent);
+        web.cache = JSON.parse(decoder.decode(res));
+      }
+    }
   }
 };

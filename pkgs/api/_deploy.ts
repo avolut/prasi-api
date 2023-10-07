@@ -1,6 +1,7 @@
 import { $ } from "execa";
 import * as fs from "fs";
 import { dirAsync, writeAsync } from "fs-jetpack";
+import { compress } from "brotli-compress";
 import { apiContext } from "service-srv";
 import { dir } from "utils/dir";
 import { g } from "utils/global";
@@ -21,7 +22,7 @@ export const _ = {
       id_site: string;
     }
   ) {
-    const { req, res } = apiContext(this);
+    const { res } = apiContext(this);
 
     if (!g.web[action.id_site]) {
       g.web[action.id_site] = {
@@ -53,10 +54,10 @@ export const _ = {
         if (action.url) {
           g.dburl = action.url;
           await writeAsync(
-            dir(".env"),
+            dir("app/db/.env"),
             `\
 DATABASE_URL="${action.url}"
-PORT=${g.port}`
+`
           );
         }
         return "ok";
@@ -140,7 +141,10 @@ const downloadFile = async (url: string, filePath: string) => {
     const response = await fetch(_url);
     if (response.body) {
       const blobData = await Bun.readableStreamToBlob(response.body);
-      await Bun.write(filePath, blobData);
+      await Bun.write(
+        filePath,
+        await compress(new Uint8Array(await blobData.arrayBuffer()))
+      );
     }
     return true;
   } catch (e) {

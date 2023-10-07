@@ -7,6 +7,7 @@ import { serveAPI } from "./serve-api";
 import { serveWeb } from "./serve-web";
 import { dir } from "../utils/dir";
 import { file } from "bun";
+import { trim } from "radash";
 
 export const createServer = async () => {
   g.router = createRouter({ strictTrailingSlash: true });
@@ -27,7 +28,7 @@ export const createServer = async () => {
               path: importPath.substring((root || path).length + 1),
             };
             g.api[filename] = route;
-            g.router.insert(route.url, route);
+            g.router.insert(route.url, g.api[filename]);
           } catch (e) {
             g.log.warn(
               `Failed to import app/srv/api${importPath.substring(
@@ -60,8 +61,12 @@ export const createServer = async () => {
       const url = new URL(req.url);
 
       const web = await serveWeb(url, req);
+      let index = "";
       if (web) {
-        return web;
+        if (typeof web === "string") index = web;
+        else {
+          return web;
+        }
       }
 
       const api = await serveAPI(url, req);
@@ -69,7 +74,27 @@ export const createServer = async () => {
         return api;
       }
 
-      return new Response(`Bun ${url.pathname}`);
+      if (index) {
+        let status: any = {};
+        if (!["", "index.html"].includes(trim(url.pathname, " /"))) {
+          status = {
+            status: 404,
+            statusText: "Not Found",
+          };
+        }
+
+        return new Response(index, {
+          ...status,
+          headers: {
+            "content-type": "text/html",
+          },
+        });
+      }
+
+      return new Response(`404 Not Found`, {
+        status: 404,
+        statusText: "Not Found",
+      });
     },
   });
 

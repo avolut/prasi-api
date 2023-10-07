@@ -4,7 +4,8 @@ import { g } from "utils/global";
 import { dir } from "utils/dir";
 
 const cache = {
-  src: "",
+  dev: "",
+  prod: "",
 };
 
 export const _ = {
@@ -19,14 +20,13 @@ export const _ = {
       },
       "load.js": async () => {
         res.setHeader("content-type", "text/javascript");
+
         const url = req.query_parameters["url"]
           ? JSON.stringify(req.query_parameters["url"])
           : "undefined";
 
-        // cache.src = await getApiTypes();
-
-        if (!cache.src) {
-          cache.src = `\
+        if (!cache.dev) {
+          cache.dev = `\
 (() => {
   const baseurl = new URL(location.href);
   baseurl.pathname = '';
@@ -36,7 +36,7 @@ export const _ = {
     w.prasiApi = {};
   }
   w.prasiApi[url] = {
-    apiEntry: ${getApiEntry()},
+    apiEntry: ${JSON.stringify(getApiEntry())},
     apiTypes: ${JSON.stringify((await getApiTypes()) || "")},
     prismaTypes: {
       "prisma.d.ts": ${await getPrisma("prisma")},
@@ -45,8 +45,27 @@ export const _ = {
     },
   };
 })();`;
+
+          cache.prod = `\
+(() => {
+  const baseurl = new URL(location.href);
+  baseurl.pathname = '';
+  const url = ${url} || baseurl.toString();
+  const w = window;
+  if (!w.prasiApi) {
+    w.prasiApi = {};
+  }
+  w.prasiApi[url] = {
+    apiEntry: ${JSON.stringify(getApiEntry())},
+  };
+})();`;
         }
-        res.send(cache.src);
+
+        if (req.query_parameters["dev"]) {
+          res.send(cache.dev);
+        } else {
+          res.send(cache.prod);
+        }
       },
     };
 
@@ -59,14 +78,14 @@ export const _ = {
   },
 };
 
-const getApiEntry = () => {
+export const getApiEntry = () => {
   const res: any = {};
   for (const [k, v] of Object.entries(g.api)) {
     const name = k.substring(0, k.length - 3);
     res[name] = { ...v, name, path: `app/srv/api/${v.path}` };
   }
 
-  return JSON.stringify(res);
+  return res;
 };
 
 const getApiTypes = async () => {

@@ -13,7 +13,7 @@ export const startDevWatcher = async () => {
 import { apiContext } from "service-srv";
 
 export const _ = {
-  url: "/login",
+  url: "/${filename?.substring(0, filename.length - 3)})}",
   async api() {
     const { req, res } = apiContext(this);
     return "This is ${filename}";

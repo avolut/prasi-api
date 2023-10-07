@@ -2,12 +2,24 @@ import { createResponse } from "service-srv";
 import { g } from "../utils/global";
 
 export const serveAPI = async (url: URL, req: Request) => {
-  const found = g.router.lookup(url.pathname);
+  let found = g.router.lookup(url.pathname);
+  if (!found?.url) {
+    if (!url.pathname.endsWith("/")) {
+      found = g.router.lookup(url.pathname + "/");
+    }
+
+    if (!found?.url) {
+      found = null;
+    }
+  }
 
   if (found) {
     const params = { ...found.params };
 
-    let args = found.args.map((e) => undefined);
+    let args = found.args.map((e) => {
+      return params[e];
+    });
+
     if (req.method !== "GET") {
       if (!req.headers.get("content-type")?.startsWith("multipart/form-data")) {
         try {

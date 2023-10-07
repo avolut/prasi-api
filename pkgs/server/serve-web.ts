@@ -1,4 +1,7 @@
 import { g } from "../utils/global";
+import { join } from "path";
+import { statSync } from "fs";
+import { readAsync } from "fs-jetpack";
 
 export const serveWeb = async (url: URL, req: Request) => {
   const domain = req.url.substring(0, req.url.length - url.pathname.length);
@@ -20,5 +23,22 @@ export const serveWeb = async (url: URL, req: Request) => {
     return false;
   }
 
-  return new Response("NOT FOUND", { status: 404, statusText: "NOT FOUND" });
+  const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
+
+  let path = join(base, url.pathname);
+
+  try {
+    const s = statSync(path);
+    if (s.isFile()) {
+      return new Response(Bun.file(path));
+    }
+  } catch (e) {}
+
+  const index = await readAsync(join(base, "index.html"));
+  if (index) {
+    return index.replace(
+      "</body>",
+      `<script>window.id_site = "${site_id}";</script></body>`
+    );
+  }
 };

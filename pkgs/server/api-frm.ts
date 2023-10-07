@@ -15,12 +15,20 @@ export const generateAPIFrm = async () => {
     }
     return value;
   }
-
+ 
   window.addEventListener('message', (e) => {
     const msg = e.data;
     const init = Object.assign({}, msg.init)
 
-    const url = new URL(msg.input);
+    let input = msg.input;
+    let url = msg.input;
+    if (typeof msg.input === 'string') {
+      if (!input.startsWith('http')) {
+        url = new URL(\`\$\{location.origin\}\$\{input\}\`)
+      } else {
+        url = new URL(input)
+      }
+    }
 
     if (init && init.body && typeof init.body === 'object') {
       if (Array.isArray(init.body)) {
