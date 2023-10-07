@@ -2,6 +2,7 @@ import { g } from "../utils/global";
 import { join } from "path";
 import { statSync } from "fs";
 import { readAsync } from "fs-jetpack";
+import { dir } from "utils/dir";
 
 export const serveWeb = async (url: URL, req: Request) => {
   const domain = url.hostname;
@@ -24,7 +25,7 @@ export const serveWeb = async (url: URL, req: Request) => {
     return false;
   }
 
-  const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
+  const base = dir(`app/static/site`);
 
   let path = join(base, url.pathname);
 
@@ -35,11 +36,19 @@ export const serveWeb = async (url: URL, req: Request) => {
     }
   } catch (e) {}
 
-  const index = await readAsync(join(base, "index.html"));
-  if (index) {
-    return index.replace(
-      "</body>",
-      `<script>window.id_site = "${site_id}";</script></body>`
-    );
-  }
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <link rel="stylesheet" href="https://prasi.app/index.css">
+</head>
+<body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
+  <div id="root"></div>
+  <script src="/site.js" type="module"></script>
+  <script>window.id_site = "${site_id}";</script>
+</body>
+</html>`;
 };

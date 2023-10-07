@@ -1,7 +1,6 @@
 import { apiContext } from "service-srv";
 import mp from "@surfy/multipart-parser";
 import { dir } from "utils/dir";
-import { writeAsync } from "fs-jetpack";
 
 export const _ = {
   url: "/_upload",
@@ -22,7 +21,7 @@ export const _ = {
         .toLowerCase()}`;
 
       url = `/_file/${path}`;
-      await writeAsync(dir(`../data/upload/${path}`), part.buffer);
+      await Bun.write(dir(`../data/upload/${path}`), part.buffer);
     }
 
     return url;

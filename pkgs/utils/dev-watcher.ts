@@ -1,14 +1,14 @@
 import { file } from "bun";
 import { watch } from "fs";
 import { dir } from "./dir";
-import { dirAsync, writeAsync } from "fs-jetpack";
+import { dirAsync } from "fs-jetpack";
 
 export const startDevWatcher = async () => {
   await dirAsync(dir(`app/srv/api`));
   watch(dir(`app/srv/api`), async (event, filename) => {
     const s = file(dir(`app/srv/api/${filename}`));
     if (s.size === 0) {
-      await writeAsync(
+      await Bun.write(
         `app/srv/api/${filename}`,
         `\
 import { apiContext } from "service-srv";

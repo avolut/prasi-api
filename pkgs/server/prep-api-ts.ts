@@ -1,7 +1,7 @@
-import { spawn, spawnSync } from "bun";
-import { g } from "../utils/global";
-import { readAsync, writeAsync } from "fs-jetpack";
+import { spawnSync } from "bun";
+import { readAsync } from "fs-jetpack";
 import { dir } from "../utils/dir";
+import { g } from "../utils/global";
 
 export const prepareAPITypes = async () => {
   const out: string[] = [];
@@ -16,7 +16,7 @@ export const ${name} = {
   handler: import("./api/${v.path.substring(0, v.path.length - 3)}")
 }`);
   }
-  await writeAsync(dir(`app/srv/exports.ts`), out.join(`\n`));
+  await Bun.write(dir(`app/srv/exports.ts`), out.join(`\n`));
 
   const targetFile = dir("app/srv/exports.d.ts");
   spawnSync(
@@ -39,6 +39,6 @@ export const ${name} = {
     res = res.replace("server: Server;", "");
     res = res.replace(`import { PrismaClient } from "app/db/db";`, "");
     res = res.replace(`db: PrismaClient;`, "");
-    await writeAsync(targetFile, res);
+    await Bun.write(targetFile, res);
   }
 };

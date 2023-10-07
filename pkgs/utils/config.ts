@@ -1,4 +1,4 @@
-import { dirAsync, readAsync, writeAsync } from "fs-jetpack";
+import { dirAsync, readAsync } from "fs-jetpack";
 import { dir } from "./dir";
 
 const _internal = { config: {} as any, writeTimeout: null as any };
@@ -27,7 +27,7 @@ export const config = {
     _internal.config[key] = value;
     clearTimeout(_internal.writeTimeout);
     _internal.writeTimeout = setTimeout(() => {
-      writeAsync(dir("../data/config/conf.json"), _internal.config);
+      Bun.write(dir("../data/config/conf.json"), _internal.config);
     }, 100);
   },
 };

@@ -1,7 +1,6 @@
-import { gzipSync } from "bun";
 import { $ } from "execa";
 import * as fs from "fs";
-import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
+import { dirAsync, removeAsync } from "fs-jetpack";
 import { apiContext } from "service-srv";
 import { dir } from "utils/dir";
 import { g } from "utils/global";
@@ -57,7 +56,7 @@ export const _ = {
       case "db-update":
         if (action.url) {
           g.dburl = action.url;
-          await writeAsync(
+          await Bun.write(
             dir("app/db/.env"),
             `\
 DATABASE_URL="${action.url}"
@@ -86,7 +85,7 @@ DATABASE_URL="${action.url}"
       case "domain-add":
         {
           web.domains.push(action.domain);
-          await writeAsync(dir(`${path}/domains.json`), web.domains);
+          await Bun.write(`${path}/domains.json`, web.domains);
           g.domains = null;
           res.send("ok");
         }
@@ -94,7 +93,7 @@ DATABASE_URL="${action.url}"
       case "domain-del":
         {
           web.domains = web.domains.filter((e) => e !== action.domain);
-          await writeAsync(dir(`${path}/domains.json`), web.domains);
+          await Bun.write(`${path}/domains.json`, web.domains);
           g.domains = null;
 
           res.send("ok");

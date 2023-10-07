@@ -1,5 +1,5 @@
 import { spawnSync } from "bun";
-import { dirAsync, removeAsync, writeAsync } from "fs-jetpack";
+import { dirAsync, removeAsync, Bun.write } from "fs-jetpack";
 import { dirname } from "path";
 import unzipper from "unzipper";
 import { dir } from "utils/dir";
@@ -19,7 +19,7 @@ for (const file of data.files) {
       promises.push(
         new Promise<void>(async (done) => {
           await dirAsync(dirname(dir(path)));
-          await writeAsync(dir(path), await file.buffer());
+          await Bun.write(dir(path), await file.buffer());
           done();
         })
       );
