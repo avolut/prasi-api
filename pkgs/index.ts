@@ -18,7 +18,9 @@ if (g.db) {
 }
 
 await config.init();
+
 await loadWeb();
+
 
 g.mode = process.argv.includes("dev") ? "dev" : "prod";
 g.log.info(g.mode === "dev" ? "DEVELOPMENT" : "PRODUCTION");

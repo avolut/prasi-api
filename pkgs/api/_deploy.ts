@@ -31,6 +31,7 @@ export const _ = {
         current: 0,
         domains: [],
         deploying: null,
+        router: null,
         deploys: [],
         site_id: action.id_site,
         cacheKey: 0,

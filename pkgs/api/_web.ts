@@ -38,9 +38,9 @@ export const _ = {
               return {
                 id: e.id,
                 url: e.url,
-              }; 
+              };
             });
-          } 
+          }
           case "page": {
             res.setHeader("content-type", "application/json");
             return cache.pages.find((e) => e.id === parts[1]);
@@ -55,13 +55,17 @@ export const _ = {
             return cache.npm.site[path];
           }
           case "npm-page": {
-            let path = parts.slice(1).join("/");
-            res.setHeader("content-type", mime.getType(path) || "text/plain");
+            const page_id = parts[1];
+            if (cache.npm.pages[page_id]) {
+              let path = parts.slice(2).join("/");
+              res.setHeader("content-type", mime.getType(path) || "text/plain");
 
-            if (path === "page.js") {
-              path = "index.js";
+              if (path === "page.js") {
+                path = "index.js";
+              }
+              return cache.npm.pages[page_id][path];
             }
-            return cache.npm.pages[path];
+            res.setHeader("content-type", "text/javascript");
           }
           case "comp": {
             res.setHeader("content-type", "application/json");

@@ -43,7 +43,12 @@ export const loadWeb = async () => {
 
   const list = await inspectTreeAsync(dir(`app/web`));
   for (const web of list?.children || []) {
-    const deploy = web.children.find((e) => e.name === "deploys");
+    if (web.type === 'file') continue;
+
+    const deploy = web.children?.find((e) => e.name === "deploys");
+    if (!deploy) {
+      await dirAsync(dir(`app/web/${web.name}/deploys`));
+    }
 
     g.web[web.name] = {
       current: parseInt(
@@ -61,9 +66,11 @@ export const loadWeb = async () => {
     };
 
     const cur = g.web[web.name];
+
     if (!cur.deploys.includes(cur.current)) {
       cur.current = 0;
     }
+
     if (cur.current) {
       await loadWebCache(cur.site_id, cur.current);
     }
