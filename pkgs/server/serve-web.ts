@@ -24,8 +24,8 @@ export const serveWeb = async (url: URL, req: Request) => {
     return false;
   }
 
-  // const base = dir(`app/static/site`);
-  const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
+  const base = dir(`app/static/site`);
+  // const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
 
   let path = join(base, url.pathname);
 
