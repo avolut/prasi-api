@@ -40,7 +40,7 @@ export const serveWeb = async (url: URL, req: Request) => {
       const res = await fetch("https://prasi.app/index.css");
       index.css = await res.text();
     }
-
+ 
     return new Response(index.css, {
       headers: {
         "content-type": "text/css",
