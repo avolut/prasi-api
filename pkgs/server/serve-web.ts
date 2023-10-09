@@ -1,7 +1,11 @@
 import { statSync } from "fs";
 import { join } from "path";
-import { dir } from "utils/dir";
 import { g } from "../utils/global";
+
+const index = {
+  html: "",
+  css: "",
+};
 
 export const serveWeb = async (url: URL, req: Request) => {
   const domain = url.hostname;
@@ -24,10 +28,23 @@ export const serveWeb = async (url: URL, req: Request) => {
     return false;
   }
 
-  const base = dir(`app/static/site`);
-  // const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
+  // const base = dir(`app/static/site`);
+  const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
 
   let path = join(base, url.pathname);
+
+  if (url.pathname.startsWith("/index.css")) {
+    if (!index.css) {
+      const res = await fetch("https://prasi.app/index.css");
+      index.css = await res.text();
+    }
+
+    return new Response(index.css, {
+      headers: {
+        "content-type": "text/css",
+      },
+    });
+  }
 
   try {
     const s = statSync(path);
@@ -36,22 +53,23 @@ export const serveWeb = async (url: URL, req: Request) => {
     }
   } catch (e) {}
 
-  return [
-    site_id,
-    `
+  if (!index.html) {
+    index.html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
-  <link rel="stylesheet" href="https://prasi.app/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
 <body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
   <div id="root"></div>
   <script src="/site.js" type="module"></script>
   <script>window.id_site = "${site_id}";</script>
 </body>
-</html>`,
-  ];
+</html>`;
+  }
+
+  return [site_id, index.html];
 };
