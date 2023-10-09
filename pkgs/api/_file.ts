@@ -7,6 +7,11 @@ export const _ = {
     const { req } = apiContext(this);
     const rpath = decodeURIComponent(req.params._);
     const path = dir(`../data/upload/${rpath}`);
-    return new Response(Bun.file(path));
+
+    try {
+      return new Response(Bun.file(path));
+    } catch (e) {
+      return new Response("NOT FOUND", { status: 404 });
+    }
   },
-};
+}; 
