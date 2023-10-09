@@ -1,10 +1,12 @@
 import { statSync } from "fs";
 import { join } from "path";
 import { g } from "../utils/global";
+import { dir } from "utils/dir";
 
 const index = {
   html: "",
   css: "",
+  isFile: {} as Record<string, boolean>,
 };
 
 export const serveWeb = async (url: URL, req: Request) => {
@@ -28,8 +30,8 @@ export const serveWeb = async (url: URL, req: Request) => {
     return false;
   }
 
-  // const base = dir(`app/static/site`);
-  const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
+  const base = dir(`app/static/site`);
+  // const base = `/Users/r/Developer/prasi/.output/app/srv/site`;
 
   let path = join(base, url.pathname);
 
@@ -47,8 +49,13 @@ export const serveWeb = async (url: URL, req: Request) => {
   }
 
   try {
-    const s = statSync(path);
-    if (s.isFile()) {
+    if (typeof index.isFile[path] === "undefined") {
+      const s = statSync(path);
+      if (s.isFile()) {
+        index.isFile[path] = true;
+        return new Response(Bun.file(path));
+      }
+    } else if (index.isFile[path]) {
       return new Response(Bun.file(path));
     }
   } catch (e) {}
