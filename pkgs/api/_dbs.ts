@@ -13,8 +13,7 @@ export const _ = {
       res.send(result);
     } catch (e: any) {
       res.sendStatus(500);
-      console.error(e);
-      res.send(e);
+      res.send(e.message);
       console.error(e);
     }
   },
