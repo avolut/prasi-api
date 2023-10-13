@@ -2,6 +2,7 @@ import mp from "@surfy/multipart-parser";
 import { writeAsync } from "fs-jetpack";
 import { apiContext } from "service-srv";
 import { dir } from "utils/dir";
+import { g } from "utils/global";
 export const _ = {
   url: "/_upload",
   async api(body: any) {
@@ -14,14 +15,14 @@ export const _ = {
       { fileName: string; mime: string; type: string; buffer: Buffer }
     >;
 
-    for (const [name, part] of Object.entries(parts)) {
+    for (const [_, part] of Object.entries(parts)) {
       const d = new Date();
       const path = `${d.getFullYear()}-${d.getMonth()}/${d.getDate()}/${d.getTime()}-${part.fileName
         ?.replace(/[\W_]+/g, "-")
-        .toLowerCase()}`; 
+        .toLowerCase()}`;
 
       url = `/_file/${path}`;
-      await writeAsync(dir(`../data/upload/${path}`), part.buffer);
+      await writeAsync(dir(`${g.datadir}/upload/${path}`), part.buffer);
     }
 
     return url;

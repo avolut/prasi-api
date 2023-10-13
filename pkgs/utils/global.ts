@@ -13,6 +13,7 @@ type SingleRoute = {
 export const g = global as unknown as {
   db: PrismaClient;
   dburl: string;
+  datadir: string;
   mode: "dev" | "prod";
   server: Server;
   log: Logger;

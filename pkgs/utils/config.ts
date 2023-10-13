@@ -1,15 +1,16 @@
 import { dirAsync, readAsync } from "fs-jetpack";
 import { dir } from "./dir";
+import { g } from "./global";
 
 const _internal = { config: {} as any, writeTimeout: null as any };
 
 export const config = {
   init: async () => {
-    await dirAsync(dir("../data/config"));
-    await dirAsync(dir("../data/files"));
+    await dirAsync(dir(`${g.datadir}/config`));
+    await dirAsync(dir(`${g.datadir}/files`));
 
     _internal.config =
-      (await readAsync(dir("../data/config/conf.json"), "json")) || {};
+      (await readAsync(dir(`${g.datadir}/config/conf.json`), "json")) || {};
   },
   get all() {
     return _internal.config;
@@ -27,7 +28,7 @@ export const config = {
     _internal.config[key] = value;
     clearTimeout(_internal.writeTimeout);
     _internal.writeTimeout = setTimeout(() => {
-      Bun.write(dir("../data/config/conf.json"), _internal.config);
+      Bun.write(dir(`${g.datadir}/config/conf.json`), _internal.config);
     }, 100);
   },
 };

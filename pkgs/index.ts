@@ -9,6 +9,9 @@ import { ensureNotRunning } from "utils/ensure";
 import { preparePrisma } from "utils/prisma";
 import { startDevWatcher } from "utils/dev-watcher";
 
+g.mode = process.argv.includes("dev") ? "dev" : "prod";
+g.datadir = g.mode === "prod" ? "../data" : ".data";
+
 await preparePrisma();
 await createLogger();
 await ensureNotRunning();
@@ -21,8 +24,6 @@ await config.init();
 
 await loadWeb();
 
-
-g.mode = process.argv.includes("dev") ? "dev" : "prod";
 g.log.info(g.mode === "dev" ? "DEVELOPMENT" : "PRODUCTION");
 if (g.mode === "dev") {
   await startDevWatcher();
