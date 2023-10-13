@@ -178,3 +178,5 @@ app/web
 app/web/*
 app/static
 app/static/*
+.data
+.data/*

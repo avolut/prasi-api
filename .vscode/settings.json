@@ -10,13 +10,15 @@
     ".gitignore": true,
     "bun.lockb": true,
     ".vscode": true,
-    "types.d.ts": true
+    "types.d.ts": true,
+    ".data": true
   },
   "hide-files.files": [
     "node_modules",
     ".gitignore",
     "bun.lockb",
     ".vscode",
-    "types.d.ts"
+    "types.d.ts",
+    ".data"
   ]
 }

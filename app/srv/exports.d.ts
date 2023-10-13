@@ -15,12 +15,12 @@ declare module "pkgs/utils/dir" {
     export const dir: (path: string) => string;
 }
 declare module "app/db/db" {
-    export * from "@prisma/client";
+    
 }
 declare module "pkgs/utils/global" {
     import { Logger } from "pino";
     import { RadixRouter } from "radix3";
-    import { PrismaClient } from "app/db/db";
+    
     type SingleRoute = {
         url: string;
         args: string[];
@@ -28,11 +28,11 @@ declare module "pkgs/utils/global" {
         path: string;
     };
     export const g: {
-        db: PrismaClient;
+        
         dburl: string;
         datadir: string;
         mode: "dev" | "prod";
-        server: Server;
+        
         log: Logger;
         api: Record<string, SingleRoute>;
         domains: null | Record<string, string>;
