@@ -1,4 +1,5 @@
-import { gunzipSync } from "zlib";
+import { file } from "bun";
+import { $ } from "execa";
 import {
   dirAsync,
   existsAsync,
@@ -7,12 +8,12 @@ import {
   removeAsync,
   writeAsync,
 } from "fs-jetpack";
+import { createRouter } from "radix3";
+import { gunzipSync } from "zlib";
+import { downloadFile } from "../api/_deploy";
 import { dir } from "../utils/dir";
 import { g } from "../utils/global";
-import { file, write } from "bun";
-import { $ } from "execa";
-import { downloadFile } from "../api/_deploy";
-import { createRouter } from "radix3";
+
 export const loadWeb = async () => {
   g.web = {};
 
@@ -43,7 +44,7 @@ export const loadWeb = async () => {
 
   const list = await inspectTreeAsync(dir(`app/web`));
   for (const web of list?.children || []) {
-    if (web.type === 'file') continue;
+    if (web.type === "file") continue;
 
     const deploy = web.children?.find((e) => e.name === "deploys");
     if (!deploy) {
