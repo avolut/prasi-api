@@ -9,20 +9,23 @@ export const prepareAPITypes = async () => {
     const name = k.substring(0, k.length - 3).replace(/\W/gi, "_");
 
     let p = {
-      path: `"app/srv/api/${v.path}"`,
+      path: `app/srv/api/${v.path}`,
       handler: `"./api/${v.path.substring(0, v.path.length - 3)}"`,
     };
 
     if (!(await existsAsync(dir(p.path)))) {
-      p.path = `"pkgs/api/${v.path}"`;
-      p.handler = `"../../pkgs/api/${v.path.substring(0, v.path.length - 3)}"`;
+      p.path = `pkgs/core/api/${v.path}`;
+      p.handler = `"../../pkgs/core/api/${v.path.substring(
+        0,
+        v.path.length - 3
+      )}"`;
     }
 
     out.push(`\
 export const ${name} = {
   name: "${name}",
   url: "${v.url}",
-  path: "app/srv/api/${v.path}",
+  path: "${p.path}",
   args: ${JSON.stringify(v.args)},
   handler: import(${p.handler})
 }`);
