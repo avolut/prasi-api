@@ -189,6 +189,9 @@ export const downloadFile = async (
     const res = await fetch(_url);
     if (res.body) {
       const file = Bun.file(filePath);
+      
+
+
       const writer = file.writer();
       const reader = res.body.getReader();
 

@@ -18,15 +18,17 @@ export const loadWeb = async () => {
   g.web = {};
 
   await dirAsync(dir(`app/static`));
-  const siteZip = `https://api.prasi.app/site-bundle`;
+  const siteZip = `${
+    g.mode === "dev" ? "http://localhost:4550" : "https://prasi.app"
+  }/site-bundle`;
   const zipPath = dir(`app/static/site.zip`);
   const md5Path = dir(`app/static/md5`);
 
   if (!(await file(zipPath).exists()) || !(await file(md5Path).exists())) {
-    await downloadFile(`${siteZip}/download`, zipPath);
     const md5 = await fetch(`${siteZip}/md5`);
     await writeAsync(md5Path, await md5.text());
-
+    await new Promise<void>((r) => setTimeout(r, 1000));
+    await downloadFile(`${siteZip}/download`, zipPath);
     await removeAsync(dir(`app/static/site`));
     await $({ cwd: dir(`app/static`) })`unzip site.zip`;
   } else {
@@ -36,6 +38,7 @@ export const loadWeb = async () => {
     if (md5txt !== (await readAsync(md5Path))) {
       const e = await fetch(`${siteZip}/download`);
       await removeAsync(dir(`app/static`));
+      await dirAsync(dir(`app/static`));
       await downloadFile(`${siteZip}/download`, zipPath);
       await writeAsync(md5Path, md5txt);
       await $({ cwd: dir(`app/static`) })`unzip site.zip`;

@@ -35,12 +35,16 @@ export const serveWeb = async (url: URL, req: Request) => {
 
   let path = join(base, url.pathname);
 
+  if (url.pathname === "/site_id") {
+    return new Response(site_id);
+  }
+
   if (url.pathname.startsWith("/index.css")) {
     if (!index.css) {
       const res = await fetch("https://prasi.app/index.css");
       index.css = await res.text();
     }
- 
+
     return new Response(index.css, {
       headers: {
         "content-type": "text/css",
@@ -61,22 +65,35 @@ export const serveWeb = async (url: URL, req: Request) => {
   } catch (e) {}
 
   if (!index.html) {
-    index.html = `
+    index.html = generateIndexHtml("", site_id);
+  }
+
+  return [site_id, index.html];
+};
+
+export const generateIndexHtml = (base_url: string, site_id: string) => {
+  const base = base_url.endsWith("/")
+    ? base_url.substring(0, base_url.length - 1)
+    : base_url;
+
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
-  <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="${base}/index.css">
 </head>
 <body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
+  <div style="position:absolute;opacity:0.1;top:0;left:0">&nbsp;</div>
   <div id="root"></div>
-  <script src="/site.js" type="module"></script>
+  <script src="${base}/site.js" type="module"></script>
   <script>window.id_site = "${site_id}";</script>
+  <script
+    src="https://js.sentry-cdn.com/a2dfb8b1128f4018b83bdc9c08d18da2.min.js"
+    crossorigin="anonymous"
+  ></script>
 </body>
 </html>`;
-  }
-
-  return [site_id, index.html];
 };

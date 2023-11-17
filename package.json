@@ -17,5 +17,5 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "dependencies": {}
+  "dependencies": { "firebase-admin": "^11.11.0" }
 }

@@ -3,6 +3,9 @@ import { Logger } from "pino";
 import { RadixRouter } from "radix3";
 import { PrismaClient } from "../../app/db/db";
 
+import admin from "firebase-admin";
+import { Database } from "bun:sqlite";
+
 type SingleRoute = {
   url: string;
   args: string[];
@@ -17,6 +20,11 @@ export const g = global as unknown as {
   mode: "dev" | "prod";
   server: Server;
   log: Logger;
+  firebaseInit: boolean,
+  firebase: admin.app.App;
+  notif: {
+    db: Database;
+  };
   api: Record<string, SingleRoute>;
   domains: null | Record<string, string>;
   web: Record<
