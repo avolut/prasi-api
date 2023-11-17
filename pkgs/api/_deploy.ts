@@ -43,6 +43,10 @@ export const _ = {
 
     const web = g.web[action.id_site];
 
+    if (!web.domains) {
+      web.domains = [];
+    }
+
     switch (action.type) {
       case "check":
         return {
@@ -86,7 +90,7 @@ DATABASE_URL="${action.url}"
       case "domain-add":
         {
           web.domains.push(action.domain);
-          await Bun.write(`${path}/domains.json`, web.domains);
+          await Bun.write(`${path}/domains.json`, JSON.stringify(web.domains));
           g.domains = null;
           res.send("ok");
         }
@@ -189,8 +193,6 @@ export const downloadFile = async (
     const res = await fetch(_url);
     if (res.body) {
       const file = Bun.file(filePath);
-      
-
 
       const writer = file.writer();
       const reader = res.body.getReader();

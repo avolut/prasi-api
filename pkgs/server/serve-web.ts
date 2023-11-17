@@ -90,10 +90,6 @@ export const generateIndexHtml = (base_url: string, site_id: string) => {
   <div id="root"></div>
   <script src="${base}/site.js" type="module"></script>
   <script>window.id_site = "${site_id}";</script>
-  <script
-    src="https://js.sentry-cdn.com/a2dfb8b1128f4018b83bdc9c08d18da2.min.js"
-    crossorigin="anonymous"
-  ></script>
 </body>
 </html>`;
 };
