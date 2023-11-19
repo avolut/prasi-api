@@ -18,6 +18,17 @@ export const _ = {
       _: () => {
         res.send({ prasi: "v2" });
       },
+      "load.json": async () => {
+        res.setHeader("content-type", "application/json");
+        res.send(`{
+          apiEntry: ${JSON.stringify(getApiEntry())},
+          apiTypes: ${JSON.stringify((await getApiTypes()) || "")},
+          prismaTypes: {
+            "prisma.d.ts": ${await getPrisma("prisma")},
+            "runtime/index.d.ts": ${await getPrisma("runtime")},
+            "runtime/library.d.ts": ${await getPrisma("library")},
+          }`);
+      },
       "load.js": async () => {
         res.setHeader("content-type", "text/javascript");
 
