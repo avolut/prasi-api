@@ -20,14 +20,17 @@ export const _ = {
       },
       "load.json": async () => {
         res.setHeader("content-type", "application/json");
-        res.send(`{
-          apiEntry: ${JSON.stringify(getApiEntry())},
-          apiTypes: ${JSON.stringify((await getApiTypes()) || "")},
-          prismaTypes: {
-            "prisma.d.ts": ${await getPrisma("prisma")},
-            "runtime/index.d.ts": ${await getPrisma("runtime")},
-            "runtime/library.d.ts": ${await getPrisma("library")},
-          }`);
+        res.send(
+          JSON.stringify({
+            apiEntry: getApiEntry(),
+            apiTypes: (await getApiTypes()) || "",
+            prismaTypes: {
+              "prisma.d.ts": await getPrisma("prisma"),
+              "runtime/index.d.ts": await getPrisma("runtime"),
+              "runtime/library.d.ts": await getPrisma("library"),
+            },
+          })
+        );
       },
       "load.js": async () => {
         res.setHeader("content-type", "text/javascript");
